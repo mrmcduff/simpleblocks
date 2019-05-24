@@ -1,8 +1,16 @@
-const Blockchain = require('./simpleChain').Blockchain;
-const Block = require('./simpleChain').Block;
+const { Blockchain } = require('./simpleChain');
+const { Block } = require('./block');
 
-const blockchain = new Blockchain();
-console.log(blockchain);
+// const blockchain = new Blockchain();
+// console.log(blockchain);
 
-blockchain.addBlock(new Block('foo'));
-console.log(blockchain);
+// blockchain.addBlock(new Block('foo'));
+// console.log(blockchain);
+
+const block = new Block({ foo: 'foo' });
+block.validate().then((value) => {
+    console.log(value);
+});
+
+console.log(block.body);
+console.log(block.getBData());
