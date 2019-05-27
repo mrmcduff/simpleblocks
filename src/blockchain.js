@@ -88,7 +88,7 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-
+            resolve(`${address}:${new Date().getTime().toString().slice(0, -3)}:starRegistry`);
         });
     }
 
@@ -125,7 +125,11 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-
+            const found = self.chain.filter(b => b.hash === hash);
+            if (found.length === 1) {
+                resolve(found[0]);
+            }
+            reject(`Block not found :${hash}`);
         });
     }
 
