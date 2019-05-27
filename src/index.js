@@ -13,4 +13,6 @@ block.validate().then((value) => {
 });
 
 console.log(block.body);
-console.log(block.getBData());
+block.getBData().then(data => {
+    console.log(data);
+});
