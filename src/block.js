@@ -11,7 +11,6 @@
 
 const SHA256 = require('crypto-js/sha256');
 const hex2ascii = require('hex2ascii');
-
 class Block {
 
     // Constructor - argument data will be the object containing the transaction data
@@ -77,7 +76,6 @@ class Block {
                 reject(error);
             }
         });
-
         // Resolve with the data if the object isn't the Genesis block
     }
 

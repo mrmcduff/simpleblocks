@@ -71,7 +71,7 @@ class Blockchain {
             try {
                 block.hash = SHA256(JSON.stringify(block));
                 self.height = self.height + 1;
-                resolve();
+                resolve(block);
             } catch (error) {
                 reject(error);
             }
@@ -112,8 +112,29 @@ class Blockchain {
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-
+            const messageTime = self._slicedStringToDate(message.split(':')[1]);
+            const ellapsedTime = parseInt(new Date() - messageTime);
+            if (ellapsedTime < 0 || ellapsedTime > 5 * 60 * 1000) {
+                reject('Message time is invalid');
+            }
+            if (bitcoinMessage.verify(message, address, signature)) {
+                // The shape of the data on our blocks will have a star
+                // and an address field
+                data = {
+                    star,
+                    address
+                }
+                self._addBlock(new Block(data)).then((addedBlock) => {
+                    resolve(addedBlock);
+                });
+            } else {
+                reject('Block could not be verified');
+            }
         });
+    }
+
+    _slicedStringToDate(timeString) {
+        return new Date(parseInt(`${timeString}000`));
     }
 
     /**
@@ -158,9 +179,20 @@ class Blockchain {
      */
     getStarsByWalletAddress(address) {
         let self = this;
-        let stars = [];
-        return new Promise((resolve, reject) => {
-
+        return new Promise(async (resolve, reject) => {
+            const foundStars = [];
+            self.chain.forEach(block => {
+                block.getBData()
+                    .then(data => {
+                        if (data && data.address === address) {
+                            foundStars.push(data.star);
+                        }
+                    })
+                    .catch(() => {
+                        console.log(`Error parsing data from at height ${block.height}`);
+                    });
+            });
+            resolve(foundStars);
         });
     }
 
