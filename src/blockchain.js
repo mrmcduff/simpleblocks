@@ -206,7 +206,16 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-
+            self.chain.forEach(block => {
+                // Block.validate always resolves (value is true/false for valid/invalid),
+                // as per instructions.
+                block.validate().then(isValid => {
+                    if (!isValid) {
+                        errorLog.push(`Invalid block at height ${block.height}`);
+                    }
+                });
+            });
+            resolve(errorLog);
         });
     }
 
