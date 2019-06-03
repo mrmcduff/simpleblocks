@@ -47,6 +47,9 @@ class ApplicationServer {
 
     start() {
         let self = this;
+        // self.blockchain.initializeChain().then(() => {
+
+        // })
         this.app.listen(this.app.get("port"), () => {
             console.log(`Server Listening for port: ${self.app.get("port")}`);
         });

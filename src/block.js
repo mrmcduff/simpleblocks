@@ -41,10 +41,8 @@ class Block {
             const oldHash = self.hash;
             // We calculate a hash value without the old one
             self.hash = null;
-            const reHash = SHA256(JSON.stringify(self));
+            const reHash = SHA256(JSON.stringify(self)).toString();
             // Recalculate the hash of the Block
-            console.log(`old hash was ${oldHash}`);
-            console.log(`new hash is ${reHash}`);
             // Replace the old value.
             self.hash = oldHash;
             resolve(reHash === oldHash);

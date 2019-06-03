@@ -56,7 +56,7 @@ class Blockchain {
      * or reject if an error happen during the execution.
      * You will need to check for the height to assign the `previousBlockHash`,
      * assign the `timestamp` and the correct `height`...At the end you need to 
-     * create the `block hash` and push the block into the chain array. Don't for get 
+     * create the `block hash` and push the block into the chain array. Don't forget 
      * to update the `this.height`
      * Note: the symbol `_` in the method name indicates in the javascript convention 
      * that this method is a private method. 
@@ -69,8 +69,9 @@ class Blockchain {
             }
             block.height = self.height + 1;
             try {
-                block.hash = SHA256(JSON.stringify(block));
+                block.hash = SHA256(JSON.stringify(block)).toString();
                 self.height = self.height + 1;
+                self.chain.push(block);
                 resolve(block);
             } catch (error) {
                 reject(error);
@@ -115,16 +116,16 @@ class Blockchain {
             const messageTime = self._slicedStringToDate(message.split(':')[1]);
             const ellapsedTime = parseInt(new Date() - messageTime);
             if (ellapsedTime < 0 || ellapsedTime > 5 * 60 * 1000) {
-                reject('Message time is invalid');
+                reject(`Message is too old`);
             }
             if (bitcoinMessage.verify(message, address, signature)) {
                 // The shape of the data on our blocks will have a star
                 // and an address field
-                data = {
+                const data = {
                     star,
                     address
                 }
-                self._addBlock(new Block(data)).then((addedBlock) => {
+                self._addBlock(new BlockClass.Block(data)).then((addedBlock) => {
                     resolve(addedBlock);
                 });
             } else {
@@ -162,6 +163,7 @@ class Blockchain {
     getBlockByHeight(height) {
         let self = this;
         return new Promise((resolve, reject) => {
+            console.log(self.chain);
             let block = self.chain.filter(p => p.height === height)[0];
             if (block) {
                 resolve(block);
