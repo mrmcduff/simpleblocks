@@ -69,6 +69,7 @@ class Blockchain {
             }
             block.height = self.height + 1;
             try {
+                block.time = (new Date().getTime()).toString();
                 block.hash = SHA256(JSON.stringify(block)).toString();
                 self.height = self.height + 1;
                 self.chain.push(block);
@@ -208,12 +209,15 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            self.chain.forEach(block => {
+            self.chain.forEach((block, index) => {
                 // Block.validate always resolves (value is true/false for valid/invalid),
                 // as per instructions.
                 block.validate().then(isValid => {
                     if (!isValid) {
                         errorLog.push(`Invalid block at height ${block.height}`);
+                    }
+                    if (index > 0 && block.previousBlockHash !== self.chain[index - 1].hash) {
+                        errorLog.push(`Block at height ${block.height} has wrong previousBlockHash`);
                     }
                 });
             });
